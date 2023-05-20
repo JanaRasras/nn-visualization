@@ -6,8 +6,12 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt 
 
-# These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
+# choose a color Palette
+BLUE = "#04253a"
+GREEN = "#4c837a"
+TAN = "#e1ddbf"
 
+# These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
 FIGURE_WIDTH = 16
 FIGURE_HEIGHT = 9
 RIGHT_BORDER = 0.7
@@ -30,7 +34,7 @@ BETWEEN_NODE_SCALE = 0.4
 def main():
     p = construct_parameters()
     fig = create_background(p)
-    save_nn_viz(fig, postfix="06_empty") # postfix: part of the name
+    save_nn_viz(fig, postfix="07_background") # postfix: part of the name
     print("parameters: ")
     print(p)
 
@@ -92,19 +96,22 @@ def construct_parameters():
 
 def create_background(p):
     fig = plt.figure(
+        edgecolor=TAN,
+        facecolor=GREEN,
         figsize = (p["figure"]["width"], p["figure"]["height"]),
+        linewidth=4,
     )
     return fig
+
+
 
 def save_nn_viz(fig, postfix = "0"):
     base_name = "nn_viz"
     filename = base_name + postfix + ".png"
-    fig.savefig(filename)
-
-
-
-
-
+    fig.savefig(filename,
+                edge_color = fig.get_edgecolor(),
+                facecolor=fig.get_facecolor(),
+                )
 
 
 if __name__ == "__main__":
