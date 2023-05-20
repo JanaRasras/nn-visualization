@@ -31,13 +31,28 @@ def main():
 
 
 def construct_parameters():
+
+    aspect_ratio = N_IMAGE_PIXEL_COLS / N_IMAGE_PIXEL_ROWS
+
     parameters = {}  # empty dict.
     # This figure as a whole
     parameters["figure"] = {
         "height": FIGURE_HEIGHT,
         "width":FIGURE_WIDTH,
     }
+
+    parameters["inputs"] = {
+        "n_cols": N_IMAGE_PIXEL_COLS,
+        "n_rows": N_IMAGE_PIXEL_ROWS,
+        "aspect_ratio": aspect_ratio,
+        "image": {
+            "bottom": INPUT_IMAGE_BOTTOM,
+            "height": INPUT_IMAGE_HEIGHT,
+            "width": INPUT_IMAGE_HEIGHT * aspect_ratio,
+        }
+    }
     return parameters
+
 
 
 
