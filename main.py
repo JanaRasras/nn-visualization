@@ -3,6 +3,8 @@ Generate a autoencoder neural network visualization
 """
 ## Libraries
 import numpy as np
+import matplotlib
+import matplotlib.pyplot as plt 
 
 # These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
 
@@ -27,6 +29,8 @@ BETWEEN_NODE_SCALE = 0.4
 
 def main():
     p = construct_parameters()
+    fig = create_background(p)
+    save_nn_viz(fig, postfix="06_empty") # postfix: part of the name
     print("parameters: ")
     print(p)
 
@@ -85,6 +89,20 @@ def construct_parameters():
     }
 
     return parameters
+
+def create_background(p):
+    fig = plt.figure(
+        figsize = (p["figure"]["width"], p["figure"]["height"]),
+    )
+    return fig
+
+def save_nn_viz(fig, postfix = "0"):
+    base_name = "nn_viz"
+    filename = base_name + postfix + ".png"
+    fig.savefig(filename)
+
+
+
 
 
 
