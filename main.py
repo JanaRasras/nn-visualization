@@ -72,6 +72,18 @@ def construct_parameters():
         "height" : parameters["inputs"]["image"]["height"]* ERROR_IMAGE_SCALE,
     }
 
+    parameters["gap"] = {
+        "right_border":RIGHT_BORDER,
+        "left_border":LEFT_BORDER,
+        "bottom_border":BOTTOM_BORDER,
+        "top_border": TOP_BORDER,
+        "between_layer":0,
+        "between_layer_scale":BETWEEN_LAYER_SCALE,
+        "between_node":0,
+        "between_node_scale": BETWEEN_NODE_SCALE,
+        "error_gap_scale":ERROR_GAP_SCALE,
+    }
+
     return parameters
 
 
