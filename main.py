@@ -25,8 +25,20 @@ BETWEEN_NODE_SCALE = 0.4
 
 
 def main():
-    print(f"Node images are {N_IMAGE_PIXEL_ROWS}"
-          + f" by {N_IMAGE_PIXEL_COLS} pixels")
+    p = construct_parameters()
+    print("parameters: ")
+    print(p)
+
+
+def construct_parameters():
+    parameters = {}  # empty dict.
+    # This figure as a whole
+    parameters["figure"] = {
+        "height": FIGURE_HEIGHT,
+        "width":FIGURE_WIDTH,
+    }
+    return parameters
+
 
 
 if __name__ == "__main__":
