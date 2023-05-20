@@ -114,10 +114,5 @@ def save_nn_viz(fig, postfix = "0"):
                 )
 
 
-
-
-
-
-
 if __name__ == "__main__":
     main()
