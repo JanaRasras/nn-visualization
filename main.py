@@ -1,7 +1,8 @@
 """
 Generate a autoencoder neural network visualization
 """
-
+## Libraries
+import numpy as np
 
 # These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
 
@@ -51,6 +52,38 @@ def construct_parameters():
             "width": INPUT_IMAGE_HEIGHT * aspect_ratio,
         }
     }
+
+    parameters["network"] = {
+        "n_nodes": N_NODES_BY_LAYER,
+        "n_layers": len(N_NODES_BY_LAYER),
+        "max_nodes": np.max(N_NODES_BY_LAYER),
+    }
+
+    # Individual node image
+    parameters["node_image"] = {
+        "height": 0,
+        "width": 0,
+    }
+    
+    parameters["error_image"] = {
+        "left" : 0,
+        "bottom": 0,
+        "width" : parameters["inputs"]["image"]["width"] * ERROR_IMAGE_SCALE,
+        "height" : parameters["inputs"]["image"]["height"]* ERROR_IMAGE_SCALE,
+    }
+
+    parameters["gap"] = {
+        "right_border":RIGHT_BORDER,
+        "left_border":LEFT_BORDER,
+        "bottom_border":BOTTOM_BORDER,
+        "top_border": TOP_BORDER,
+        "between_layer":0,
+        "between_layer_scale":BETWEEN_LAYER_SCALE,
+        "between_node":0,
+        "between_node_scale": BETWEEN_NODE_SCALE,
+        "error_gap_scale":ERROR_GAP_SCALE,
+    }
+
     return parameters
 
 
