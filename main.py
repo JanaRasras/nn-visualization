@@ -59,6 +59,12 @@ def construct_parameters():
         "max_nodes": np.max(N_NODES_BY_LAYER),
     }
 
+    # Individual node image
+    parameters["node_image"] = {
+        "height": 0,
+        "width": 0,
+    }
+
     return parameters
 
 
