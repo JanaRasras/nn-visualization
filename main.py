@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 BLUE = "#04253a"
 GREEN = "#4c837a"
 TAN = "#e1ddbf"
+DPI = 300  # increase the resolution 
 
 # These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
 FIGURE_WIDTH = 16
@@ -33,8 +34,8 @@ BETWEEN_NODE_SCALE = 0.4
 
 def main():
     p = construct_parameters()
-    fig = create_background(p)
-    save_nn_viz(fig, postfix="07_background") # postfix: part of the name
+    fig,ax_boss = create_background(p)
+    save_nn_viz(fig, postfix="08_high_res") # postfix: part of the name
     print("parameters: ")
     print(p)
 
@@ -50,6 +51,7 @@ def construct_parameters():
         "width":FIGURE_WIDTH,
     }
 
+    
     parameters["inputs"] = {
         "n_cols": N_IMAGE_PIXEL_COLS,
         "n_rows": N_IMAGE_PIXEL_ROWS,
@@ -101,7 +103,11 @@ def create_background(p):
         figsize = (p["figure"]["width"], p["figure"]["height"]),
         linewidth=4,
     )
-    return fig
+    ax_boss = fig.add_axes((0, 0, 1, 1), facecolor="none")
+    ax_boss.set_xlim(0, 1)
+    ax_boss.set_ylim(0, 1)
+
+    return fig, ax_boss
 
 
 
@@ -112,6 +118,12 @@ def save_nn_viz(fig, postfix = "0"):
                 edge_color = fig.get_edgecolor(),
                 facecolor=fig.get_facecolor(),
                 )
+    dpi = DPI,
+
+
+
+
+
 
 
 if __name__ == "__main__":
