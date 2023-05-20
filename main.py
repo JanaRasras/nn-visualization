@@ -64,6 +64,13 @@ def construct_parameters():
         "height": 0,
         "width": 0,
     }
+    
+    parameters["error_image"] = {
+        "left" : 0,
+        "bottom": 0,
+        "width" : parameters["inputs"]["image"]["width"] * ERROR_IMAGE_SCALE,
+        "height" : parameters["inputs"]["image"]["height"]* ERROR_IMAGE_SCALE,
+    }
 
     return parameters
 
