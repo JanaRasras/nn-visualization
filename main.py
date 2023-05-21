@@ -37,7 +37,7 @@ def main():
     fig,ax_boss = create_background(p)
     p = find_error_image_position(p)
     add_input_image(fig, p)
-    save_nn_viz(fig, postfix="17_input_random_tan_border")
+    save_nn_viz(fig, postfix="18_input_random_refactored")
 
 
 def construct_parameters():
@@ -217,23 +217,38 @@ def add_input_image(fig, p):
         p["inputs"]["image"]["bottom"],
         p["inputs"]["image"]["width"],
         p["inputs"]["image"]["height"])
-    scaled_pos = (
-        absolute_pos[0] / p["figure"]["width"],
-        absolute_pos[1] / p["figure"]["height"],
-        absolute_pos[2] / p["figure"]["width"],
-        absolute_pos[3] / p["figure"]["height"])
-    ax_input = fig.add_axes(scaled_pos)
+    ax_input = add_image_axes(fig, p, absolute_pos)
     fill_patch = np.random.sample(size=(
        p["inputs"]["n_rows"],
        p["inputs"]["n_cols"],
     ))
     ax_input.imshow(fill_patch, cmap="inferno")
-    ax_input.tick_params(bottom=False, top=False, left=False, right=False)
-    ax_input.tick_params(labelbottom=False,labeltop=False, labelleft=False, labelright=False)
-    ax_input.spines["top"].set_color(TAN)
-    ax_input.spines["bottom"].set_color(TAN)
-    ax_input.spines["left"].set_color(TAN)
-    ax_input.spines["right"].set_color(TAN)
+    
+
+
+def add_image_axes(fig, p, absolute_pos):
+    """
+    Locate the Axes for the image corresponding to this node within the Figure.
+
+    absolute_pos: Tuple of
+        (left_position, bottom_position, width, height)
+    in inches on the Figure.
+    """
+    scaled_pos = (
+        absolute_pos[0] / p["figure"]["width"],
+        absolute_pos[1] / p["figure"]["height"],
+        absolute_pos[2] / p["figure"]["width"],
+        absolute_pos[3] / p["figure"]["height"])
+    ax = fig.add_axes(scaled_pos)
+    ax.tick_params(bottom=False, top=False, left=False, right=False)
+    ax.tick_params(
+        labelbottom=False, labeltop=False, labelleft=False, labelright=False)
+    ax.spines["top"].set_color(TAN)
+    ax.spines["bottom"].set_color(TAN)
+    ax.spines["left"].set_color(TAN)
+    ax.spines["right"].set_color(TAN)
+    return ax
+    
 
 if __name__ == "__main__":
     main()
