@@ -35,9 +35,7 @@ BETWEEN_NODE_SCALE = 0.4
 def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
-    save_nn_viz(fig, postfix="08_high_res") # postfix: part of the name
-    print("parameters: ")
-    print(p)
+    p = find_node_image_size(p)
 
 
 def construct_parameters():
@@ -95,6 +93,23 @@ def construct_parameters():
     }
 
     return parameters
+
+def find_node_image_size(p):
+    total_space_to_fill = (
+        p["figure"]["height"]
+        - p["gap"]["bottom_border"]
+        - p["gap"]["top_border"]
+    )
+    height_constrained_by_height = (
+        total_space_to_fill/(
+        p["network"]["max_nodes"]
+        + (p["network"]["max_nodes"] - 1)
+        * p["gap"]["between_node_scale"]
+        )
+    )
+    print("height constrained by height:", height_constrained_by_height)
+    return p 
+
 
 def create_background(p):
     fig = plt.figure(
