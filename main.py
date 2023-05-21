@@ -37,7 +37,7 @@ def main():
     fig,ax_boss = create_background(p)
     p = find_error_image_position(p)
     add_input_image(fig, p)
-    save_nn_viz(fig, postfix="18_input_random_refactored")
+    save_nn_viz(fig, postfix="19_input_random_refactored")
 
 
 def construct_parameters():
@@ -218,11 +218,16 @@ def add_input_image(fig, p):
         p["inputs"]["image"]["width"],
         p["inputs"]["image"]["height"])
     ax_input = add_image_axes(fig, p, absolute_pos)
-    fill_patch = np.random.sample(size=(
-       p["inputs"]["n_rows"],
-       p["inputs"]["n_cols"],
-    ))
-    ax_input.imshow(fill_patch, cmap="inferno")
+    add_filler_image(
+        ax_input,
+        p["inputs"]["n_rows"],
+        p["inputs"]["n_cols"]
+    )
+        
+
+def add_filler_image(ax, n_im_rows, n_im_cols):
+    fill_patch = np.random.sample(size=(n_im_rows, n_im_cols))
+    ax.imshow(fill_patch, cmap="inferno")
     
 
 
