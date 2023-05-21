@@ -36,6 +36,7 @@ def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
     p = find_node_image_size(p)
+    print("node image dim", p["node_image"])
 
 
 def construct_parameters():
@@ -129,8 +130,15 @@ def find_node_image_size(p):
         width_constrained_by_width
         / p["inputs"]["aspect_ratio"]
     )
-
-    print("height constrained by width:", height_constrained_by_width)
+    
+    # see which constrain is more restrictive
+    p["node_image"]["height"] = np.minimum(
+        height_constrained_by_width,
+        height_constrained_by_height)
+    p["node_image"]["width"] = (
+        p["node_image"]["height"]
+        * p["inputs"]["aspect_ratio"]
+    )
     return p
 
 
