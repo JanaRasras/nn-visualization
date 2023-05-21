@@ -37,7 +37,7 @@ def main():
     fig,ax_boss = create_background(p)
     p = find_error_image_position(p)
     add_input_image(fig, p)
-    save_nn_viz(fig, postfix="16_input_random_no stick")
+    save_nn_viz(fig, postfix="17_input_random_tan_border")
 
 
 def construct_parameters():
@@ -229,10 +229,11 @@ def add_input_image(fig, p):
     ))
     ax_input.imshow(fill_patch, cmap="inferno")
     ax_input.tick_params(bottom=False, top=False, left=False, right=False)
-    ax_input.tick_params(
-        labelbottom=False,labeltop=False, labelleft=False, labelright=False        
-    )
-
+    ax_input.tick_params(labelbottom=False,labeltop=False, labelleft=False, labelright=False)
+    ax_input.spines["top"].set_color(TAN)
+    ax_input.spines["bottom"].set_color(TAN)
+    ax_input.spines["left"].set_color(TAN)
+    ax_input.spines["right"].set_color(TAN)
 
 if __name__ == "__main__":
     main()
