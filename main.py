@@ -95,6 +95,7 @@ def construct_parameters():
     return parameters
 
 def find_node_image_size(p):
+    # First assume height is the limiting factor
     total_space_to_fill = (
         p["figure"]["height"]
         - p["gap"]["bottom_border"]
@@ -107,8 +108,31 @@ def find_node_image_size(p):
         * p["gap"]["between_node_scale"]
         )
     )
-    print("height constrained by height:", height_constrained_by_height)
-    return p 
+        # Second assume width is the limiting factor.
+    total_space_to_fill = (
+        p["figure"]["width"]
+        - p["gap"]["left_border"]
+        - p["gap"]["right_border"]
+        - 2 * p["inputs"]["image"]["width"]
+    )
+
+    width_constrained_by_width = (
+        total_space_to_fill / (
+           p["network"]["n_layers"]
+           + (p["network"]["n_layers"] + 1)
+           * p["gap"]["between_layer_scale"]
+        )
+    )
+
+    # Figure out what the height would be for this width.
+    height_constrained_by_width = (
+        width_constrained_by_width
+        / p["inputs"]["aspect_ratio"]
+    )
+
+    print("height constrained by width:", height_constrained_by_width)
+    return p
+
 
 
 def create_background(p):
