@@ -36,8 +36,7 @@ def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
     p = find_node_image_size(p)
-    print("between layer gap", p["gap"]["between_layer"])
-
+    print("between node gap:", p['gap']['between_node'])
 
 def construct_parameters():
 
@@ -167,6 +166,21 @@ def find_between_layer_gap(p):
     )
     n_horizontal_gaps = p["network"]["n_layers"] + 1
     p["gap"]["between_layer"] = horizontal_gap_total / n_horizontal_gaps
+
+
+    # vertical
+    vertical_gap_total = (
+        p["figure"]["height"]
+        - p["figure"]["top_border"]
+        - p["gap"]["bottom_border"]
+        - p["network"]["max_nodes"]
+        * p["node_image"]["height"]
+    )
+    n_vertical_gaps = p["network"]["n_layers"] - 1
+    p["gap"]["between_nodes"] = vertical_gap_total / n_vertical_gaps
+
+
+
     return p
 
 
