@@ -35,8 +35,8 @@ BETWEEN_NODE_SCALE = 0.4
 def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
-    p = find_node_image_size(p)
-    print("between node gap:", p['gap']['between_node'])
+    p = find_error_image_position(p)
+    print("error image position:", p['error_image'])
 
 def construct_parameters():
 
@@ -141,7 +141,6 @@ def find_node_image_size(p):
     return p
 
 
-
 def create_background(p):
     fig = plt.figure(
         edgecolor=TAN,
@@ -195,6 +194,25 @@ def save_nn_viz(fig, postfix = "0"):
 
 
 
+def find_error_image_position(p):
+    p["error_image"]["bottom"] = (
+        - p["inputs"]["image"]["bottom"]
+        - p["inputs"]["image"]["height"]
+        * p["gap"]["error_gap_scale"]
+        - p["error_image"]["height"]
+    )
+    error_image_center = (
+        p["figure"]["width"]
+        -p["gap"]["right_border"]
+        -p["inputs"]["image"]["width"] / 2
+
+    )
+
+    error_image_left = (
+        error_image_center
+        -p["error_image"]["width"] / 2        
+    )
+    return p
 
 
 
