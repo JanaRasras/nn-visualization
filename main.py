@@ -36,7 +36,9 @@ def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
     p = find_error_image_position(p)
-    print("error image position:", p['error_image'])
+    add_input_image(fig, p)
+    save_nn_viz(fig, postfix="15_input_random")
+
 
 def construct_parameters():
 
@@ -140,7 +142,6 @@ def find_node_image_size(p):
     )
     return p
 
-
 def create_background(p):
     fig = plt.figure(
         edgecolor=TAN,
@@ -153,7 +154,6 @@ def create_background(p):
     ax_boss.set_ylim(0, 1)
 
     return fig, ax_boss
-
 
 def find_between_layer_gap(p):
     horizontal_gap_total = (
@@ -182,7 +182,6 @@ def find_between_layer_gap(p):
 
     return p
 
-
 def save_nn_viz(fig, postfix = "0"):
     base_name = "nn_viz"
     filename = base_name + postfix + ".png"
@@ -191,8 +190,6 @@ def save_nn_viz(fig, postfix = "0"):
                 facecolor=fig.get_facecolor(),
                 )
     dpi = DPI,
-
-
 
 def find_error_image_position(p):
     p["error_image"]["bottom"] = (
@@ -214,7 +211,23 @@ def find_error_image_position(p):
     )
     return p
 
-
+def add_input_image(fig, p):
+    absolute_pos = (
+        p["gap"]["left_border"],
+        p["inputs"]["image"]["bottom"],
+        p["inputs"]["image"]["width"],
+        p["inputs"]["image"]["height"])
+    scaled_pos = (
+        absolute_pos[0] / p["figure"]["width"],
+        absolute_pos[1] / p["figure"]["height"],
+        absolute_pos[2] / p["figure"]["width"],
+        absolute_pos[3] / p["figure"]["height"])
+    ax_input = fig.add_axes(scaled_pos)
+    fill_patch = np.random.sample(size=(
+       p["inputs"]["n_rows"],
+       p["inputs"]["n_cols"],
+    ))
+    ax_input.imshow(fill_patch, cmap="inferno")
 
 
 if __name__ == "__main__":
