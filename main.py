@@ -35,9 +35,13 @@ BETWEEN_NODE_SCALE = 0.4
 def main():
     p = construct_parameters()
     fig,ax_boss = create_background(p)
+    p = find_node_image_size(p)
+    p = find_between_layer_gap(p)
+    p = find_between_node_gap(p)
     p = find_error_image_position(p)
     add_input_image(fig, p)
-    save_nn_viz(fig, postfix="18_input_random_refactored")
+    add_node_images(fig, p)
+    save_nn_viz(fig, postfix="20_input_node_0")
 
 
 def construct_parameters():
@@ -170,7 +174,7 @@ def find_between_layer_gap(p):
     # vertical
     vertical_gap_total = (
         p["figure"]["height"]
-        - p["figure"]["top_border"]
+        - p["gap"]["top_border"]
         - p["gap"]["bottom_border"]
         - p["network"]["max_nodes"]
         * p["node_image"]["height"]
@@ -216,15 +220,18 @@ def add_input_image(fig, p):
         p["gap"]["left_border"],
         p["inputs"]["image"]["bottom"],
         p["inputs"]["image"]["width"],
-        p["inputs"]["image"]["height"])
+        p["inputs"]["image"]["height"]
+    )
     ax_input = add_image_axes(fig, p, absolute_pos)
-    fill_patch = np.random.sample(size=(
-       p["inputs"]["n_rows"],
-       p["inputs"]["n_cols"],
-    ))
-    ax_input.imshow(fill_patch, cmap="inferno")
-    
-
+    add_filler_image(
+        ax_input,
+        p["inputs"]["n_rows"],
+        p["inputs"]["n_cols"]
+    )
+        
+def add_filler_image(ax, n_im_rows, n_im_cols):
+    fill_patch = np.random.sample(size=(n_im_rows, n_im_cols))
+    ax.imshow(fill_patch, cmap="inferno")
 
 def add_image_axes(fig, p, absolute_pos):
     """
@@ -248,7 +255,48 @@ def add_image_axes(fig, p, absolute_pos):
     ax.spines["left"].set_color(TAN)
     ax.spines["right"].set_color(TAN)
     return ax
-    
+
+def add_node_images(fig, p):
+    node_image_left = (
+        p["gap"]["left_border"]
+        + p["inputs"]["image"]["width"]
+        + p["gap"]["between_layer"]
+    )
+    n_nodes = p["network"]["n_nodes"][0]
+    total_layer_height = (
+        n_nodes * p["node_image"]["height"]
+        + (n_nodes - 1) * p["gap"]["between_node"]
+    )
+    node_image_bottom = (p["figure"]["height"] - total_layer_height) / 2
+
+    absolute_pos = (
+        node_image_left,
+        node_image_bottom,
+        p["node_image"]["width"],
+        p["node_image"]["height"]
+    )
+    ax = add_image_axes(fig, p, absolute_pos)
+    add_filler_image(
+        ax,
+        p["inputs"]["n_rows"],
+        p["inputs"]["n_cols"],
+    )
+
+def find_between_node_gap(p):
+    """
+    How big is the vertical gap between_node images?
+    """
+    vertical_gap_total = (
+        p["figure"]["height"]
+        - p["gap"]["top_border"]
+        - p["gap"]["bottom_border"]
+        - p["network"]["max_nodes"]
+        * p["node_image"]["height"]
+    )
+    n_vertical_gaps = p["network"]["max_nodes"] - 1
+    p["gap"]["between_node"] = vertical_gap_total / n_vertical_gaps
+    return p
+   
 
 if __name__ == "__main__":
     main()
