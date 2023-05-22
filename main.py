@@ -43,7 +43,9 @@ def main():
     add_input_image(fig, p)
     for i_layer in range(p["network"]["n_layers"]):
         add_node_images(fig, i_layer, p)
-    save_nn_viz(fig, postfix="22_all_layers")
+    add_output_image(fig, p)
+    save_nn_viz(fig, postfix="23_output_image")
+
 
 def construct_parameters():
 
@@ -235,13 +237,7 @@ def add_filler_image(ax, n_im_rows, n_im_cols):
     ax.imshow(fill_patch, cmap="inferno")
 
 def add_image_axes(fig, p, absolute_pos):
-    """
-    Locate the Axes for the image corresponding to this node within the Figure.
 
-    absolute_pos: Tuple of
-        (left_position, bottom_position, width, height)
-    in inches on the Figure.
-    """
     scaled_pos = (
         absolute_pos[0] / p["figure"]["width"],
         absolute_pos[1] / p["figure"]["height"],
@@ -258,9 +254,7 @@ def add_image_axes(fig, p, absolute_pos):
     return ax
 
 def add_node_images(fig, i_layer, p):
-    """
-    Add in all the node images for a single layer
-    """
+    
     node_image_left = (
         p["gap"]["left_border"]
         + p["input"]["image"]["width"]
@@ -292,9 +286,7 @@ def add_node_images(fig, i_layer, p):
 
 
 def find_between_node_gap(p):
-    """
-    How big is the vertical gap between_node images?
-    """
+   
     vertical_gap_total = (
         p["figure"]["height"]
         - p["gap"]["top_border"]
@@ -307,9 +299,7 @@ def find_between_node_gap(p):
     return p
    
 def add_node_images(fig, i_layer, p):
-    """
-    Add in all the node images for a single layer
-    """
+   
     node_image_left = (
         p["gap"]["left_border"]
         + p["inputs"]["image"]["width"]
@@ -338,6 +328,24 @@ def add_node_images(fig, i_layer, p):
             p["inputs"]["n_rows"],
             p["inputs"]["n_cols"],
         )
+
+def add_output_image(fig, p):
+    output_image_left = (
+        p["figure"]["width"]
+        - p["inputs"]["image"]["width"]
+        - p["gap"]["right_border"]
+    )
+    absolute_pos = (
+        output_image_left,
+        p["inputs"]["image"]["bottom"],
+        p["inputs"]["image"]["width"],
+        p["inputs"]["image"]["height"])
+    ax_output = add_image_axes(fig, p, absolute_pos)
+    add_filler_image(
+       ax_output,
+       p["inputs"]["n_rows"],
+       p["inputs"]["n_cols"],
+    )
 
 
 if __name__ == "__main__":
