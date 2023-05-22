@@ -1,3 +1,4 @@
+
 """
 Generate a autoencoder neural network visualization
 """
@@ -41,7 +42,7 @@ def main():
     p = find_error_image_position(p)
     add_input_image(fig, p)
     add_node_images(fig, p)
-    save_nn_viz(fig, postfix="20_input_node_0")
+    save_nn_viz(fig, postfix="21_input_layer_0")
 
 
 def construct_parameters():
@@ -297,6 +298,38 @@ def find_between_node_gap(p):
     p["gap"]["between_node"] = vertical_gap_total / n_vertical_gaps
     return p
    
+def add_node_images(fig, p):
+    node_image_left = (
+        p["gap"]["left_border"]
+        + p["inputs"]["image"]["width"]
+        + p["gap"]["between_layer"]
+    )
+    n_nodes = p["network"]["n_nodes"][0]
+    total_layer_height = (
+        n_nodes * p["node_image"]["height"]
+        + (n_nodes - 1) * p["gap"]["between_node"]
+    )
+    layer_bottom = (p["figure"]["height"] - total_layer_height) / 2
+
+    for i_node in range(n_nodes):
+        node_image_bottom = (
+            layer_bottom + i_node * (
+                p["node_image"]["height"] + p["gap"]["between_node"]))
+
+        absolute_pos = (
+            node_image_left,
+            node_image_bottom,
+            p["node_image"]["width"],
+            p["node_image"]["height"])
+        ax = add_image_axes(fig, p, absolute_pos)
+        add_filler_image(
+            ax,
+            p["inputs"]["n_rows"],
+            p["inputs"]["n_cols"],
+        )
 
 if __name__ == "__main__":
     main()
+
+
+
