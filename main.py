@@ -41,9 +41,9 @@ def main():
     p = find_between_node_gap(p)
     p = find_error_image_position(p)
     add_input_image(fig, p)
-    add_node_images(fig, p)
-    save_nn_viz(fig, postfix="21_input_layer_0")
-
+    for i_layer in range(p["network"]["n_layers"]):
+        add_node_images(fig, i_layer, p)
+    save_nn_viz(fig, postfix="22_all_layers")
 
 def construct_parameters():
 
@@ -257,31 +257,39 @@ def add_image_axes(fig, p, absolute_pos):
     ax.spines["right"].set_color(TAN)
     return ax
 
-def add_node_images(fig, p):
+def add_node_images(fig, i_layer, p):
+    """
+    Add in all the node images for a single layer
+    """
     node_image_left = (
         p["gap"]["left_border"]
-        + p["inputs"]["image"]["width"]
-        + p["gap"]["between_layer"]
+        + p["input"]["image"]["width"]
+        + i_layer * p["node_image"]["width"]
+        + (i_layer + 1) * p["gap"]["between_layer"]
     )
-    n_nodes = p["network"]["n_nodes"][0]
+    n_nodes = p["network"]["n_nodes"][i_layer]
     total_layer_height = (
         n_nodes * p["node_image"]["height"]
         + (n_nodes - 1) * p["gap"]["between_node"]
     )
-    node_image_bottom = (p["figure"]["height"] - total_layer_height) / 2
+    layer_bottom = (p["figure"]["height"] - total_layer_height) / 2
+    for i_node in range(n_nodes):
+        node_image_bottom = (
+            layer_bottom + i_node * (
+                p["node_image"]["height"] + p["gap"]["between_node"]))
 
-    absolute_pos = (
-        node_image_left,
-        node_image_bottom,
-        p["node_image"]["width"],
-        p["node_image"]["height"]
-    )
-    ax = add_image_axes(fig, p, absolute_pos)
-    add_filler_image(
-        ax,
-        p["inputs"]["n_rows"],
-        p["inputs"]["n_cols"],
-    )
+        absolute_pos = (
+            node_image_left,
+            node_image_bottom,
+            p["node_image"]["width"],
+            p["node_image"]["height"])
+        ax = add_image_axes(fig, p, absolute_pos)
+        add_filler_image(
+            ax,
+            p["input"]["n_rows"],
+            p["input"]["n_cols"],
+        )
+
 
 def find_between_node_gap(p):
     """
@@ -298,19 +306,22 @@ def find_between_node_gap(p):
     p["gap"]["between_node"] = vertical_gap_total / n_vertical_gaps
     return p
    
-def add_node_images(fig, p):
+def add_node_images(fig, i_layer, p):
+    """
+    Add in all the node images for a single layer
+    """
     node_image_left = (
         p["gap"]["left_border"]
         + p["inputs"]["image"]["width"]
-        + p["gap"]["between_layer"]
+        + i_layer * p["node_image"]["width"]
+        + (i_layer + 1) * p["gap"]["between_layer"]
     )
-    n_nodes = p["network"]["n_nodes"][0]
+    n_nodes = p["network"]["n_nodes"][i_layer]
     total_layer_height = (
         n_nodes * p["node_image"]["height"]
         + (n_nodes - 1) * p["gap"]["between_node"]
     )
     layer_bottom = (p["figure"]["height"] - total_layer_height) / 2
-
     for i_node in range(n_nodes):
         node_image_bottom = (
             layer_bottom + i_node * (
@@ -327,6 +338,7 @@ def add_node_images(fig, p):
             p["inputs"]["n_rows"],
             p["inputs"]["n_cols"],
         )
+
 
 if __name__ == "__main__":
     main()
