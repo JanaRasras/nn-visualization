@@ -51,7 +51,7 @@ def main():
     add_output_image(fig, image_axes, p, filler_image)
     add_error_image(fig, image_axes, p, filler_image)
     add_layer_connections(ax_boss, image_axes)
-    save_nn_viz(fig, "28_first layer_connection")
+    save_nn_viz(fig, "29_all layer_connection")
 
 def construct_parameters():
 
@@ -368,15 +368,26 @@ def add_layer_connections(ax_boss, image_axes):
     y_start_max = ax_start_pos.y1
     y_start = (y_start_min + y_start_max) / 2
 
-    for ax_end in image_axes[1]:
-        ax_end_pos = ax_end.get_position()
-        y_end_min = ax_end_pos.y0
-        y_end_max = ax_end_pos.y1
-        y_end = (y_end_min + y_end_max) / 2
+    for i_start_layer in range(len(image_axes) - 1):
+        x_start = image_axes[i_start_layer][0].get_position().x1
+        x_end = image_axes[i_start_layer + 1][0].get_position().x0
 
-        x = [x_start, x_end]
-        y = [y_start, y_end]
-        ax_boss.plot(x, y, color=TAN)
+        for ax_start in image_axes[i_start_layer]:
+            ax_start_pos = ax_start.get_position()
+            y_start_min = ax_start_pos.y0
+            y_start_max = ax_start_pos.y1
+            y_start = (y_start_min + y_start_max) / 2
+
+            for ax_end in image_axes[i_start_layer + 1]:
+                ax_end_pos = ax_end.get_position()
+                y_end_min = ax_end_pos.y0
+                y_end_max = ax_end_pos.y1
+                y_end = (y_end_min + y_end_max) / 2
+
+                x = [x_start, x_end]
+                y = [y_start, y_end]
+                ax_boss.plot(x, y, color=TAN)
+
 
 
 if __name__ == "__main__":
