@@ -44,13 +44,14 @@ def main():
     p = find_between_node_gap(p)
     p = find_error_image_position(p)
     filler_image = load_filler_image()
-
-    add_input_image(fig, p, filler_image)
+    image_axes = []
+    add_input_image(fig, image_axes, p, filler_image)
     for i_layer in range(p["network"]["n_layers"]):
-        add_node_images(fig, i_layer, p, filler_image)
-    add_output_image(fig, p, filler_image)
-    add_error_image(fig, p,filler_image)
-    save_nn_viz(fig, postfix="25_filler_image")
+        add_node_images(fig, i_layer, image_axes, p, filler_image)
+    add_output_image(fig, image_axes, p, filler_image)
+    add_error_image(fig, image_axes, p, filler_image)
+    for i_layer, layer in enumerate(image_axes):
+        print(f"layer {i_layer - 1}: {len(layer)} Axes")
 
 def construct_parameters():
 
@@ -222,23 +223,24 @@ def find_error_image_position(p):
     )
     return p
 
-def add_input_image(fig, p, filler_image):
+def add_input_image(fig,image_axes, p, filler_image):
     absolute_pos = (
         p["gap"]["left_border"],
         p["inputs"]["image"]["bottom"],
         p["inputs"]["image"]["width"],
         p["inputs"]["image"]["height"]
     )
-    ax_input = add_image_axes(fig, p, absolute_pos)
+    ax_input = add_image_axes(fig, image_axes, p, absolute_pos)
     add_filler_image(
         ax_input,
         p["inputs"]["n_rows"],
         p["inputs"]["n_cols"],
         filler_image
     )
+    image_axes.append([ax_input])
         
 
-def add_image_axes(fig, p, absolute_pos):
+def add_image_axes(fig, image_axes, p, absolute_pos):
 
     scaled_pos = (
         absolute_pos[0] / p["figure"]["width"],
@@ -269,7 +271,7 @@ def find_between_node_gap(p):
     p["gap"]["between_node"] = vertical_gap_total / n_vertical_gaps
     return p
    
-def add_node_images(fig, i_layer, p, filler_image):
+def add_node_images(fig, i_layer,image_axes, p, filler_image):
    
     node_image_left = (
         p["gap"]["left_border"]
@@ -283,6 +285,7 @@ def add_node_images(fig, i_layer, p, filler_image):
         + (n_nodes - 1) * p["gap"]["between_node"]
     )
     layer_bottom = (p["figure"]["height"] - total_layer_height) / 2
+    layer_axes = []
     for i_node in range(n_nodes):
         node_image_bottom = (
             layer_bottom + i_node * (
@@ -293,17 +296,19 @@ def add_node_images(fig, i_layer, p, filler_image):
             node_image_bottom,
             p["node_image"]["width"],
             p["node_image"]["height"])
-        ax = add_image_axes(fig, p, absolute_pos)
+        ax = add_image_axes(fig, image_axes, p, absolute_pos)
         add_filler_image(
             ax,
             p["inputs"]["n_rows"],
             p["inputs"]["n_cols"],
             filler_image
         )
+        layer_axes.append(ax)
+    image_axes.append(layer_axes)
 
 
 
-def add_output_image(fig, p, filler_image):
+def add_output_image(fig, image_axes, p, filler_image):
     output_image_left = (
         p["figure"]["width"]
         - p["inputs"]["image"]["width"]
@@ -314,21 +319,22 @@ def add_output_image(fig, p, filler_image):
         p["inputs"]["image"]["bottom"],
         p["inputs"]["image"]["width"],
         p["inputs"]["image"]["height"])
-    ax_output = add_image_axes(fig, p, absolute_pos)
+    ax_output = add_image_axes(fig, image_axes, p, absolute_pos)
     add_filler_image(
        ax_output,
        p["inputs"]["n_rows"],
        p["inputs"]["n_cols"],
        filler_image
     )
+    image_axes.append([ax_output])
 
-def add_error_image(fig, p, filler_image):
+def add_error_image(fig,image_axes, p, filler_image):
     absolute_pos = (
         p["error_image"]["left"],
         p["error_image"]["bottom"],
         p["error_image"]["width"],
         p["error_image"]["height"])
-    ax_error = add_image_axes(fig, p, absolute_pos)
+    ax_error = add_image_axes(fig, image_axes, p, absolute_pos)
     add_filler_image(
        ax_error,
        p["inputs"]["n_rows"],
