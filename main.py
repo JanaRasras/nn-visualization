@@ -6,12 +6,15 @@ Generate a autoencoder neural network visualization
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt 
+from PIL import Image
 
 # choose a color Palette
 BLUE = "#04253a"
 GREEN = "#4c837a"
 TAN = "#e1ddbf"
 DPI = 300  # increase the resolution 
+
+FILLER_IMAGE_FILENAME = "baby.jpg"
 
 # These are the size and dimentions of the layout of the visualization.(Its like a dictionary of parameters for the visualization).
 FIGURE_WIDTH = 16
@@ -40,12 +43,14 @@ def main():
     p = find_between_layer_gap(p)
     p = find_between_node_gap(p)
     p = find_error_image_position(p)
-    add_input_image(fig, p)
-    for i_layer in range(p["network"]["n_layers"]):
-        add_node_images(fig, i_layer, p)
-    add_output_image(fig, p)
-    save_nn_viz(fig, postfix="23_output_image")
+    filler_image = load_filler_image()
 
+    add_input_image(fig, p, filler_image)
+    for i_layer in range(p["network"]["n_layers"]):
+        add_node_images(fig, i_layer, p, filler_image)
+    add_output_image(fig, p, filler_image)
+    add_error_image(fig, p,filler_image)
+    save_nn_viz(fig, postfix="25_filler_image")
 
 def construct_parameters():
 
@@ -199,26 +204,25 @@ def save_nn_viz(fig, postfix = "0"):
     dpi = DPI,
 
 def find_error_image_position(p):
+
     p["error_image"]["bottom"] = (
-        - p["inputs"]["image"]["bottom"]
+        p["inputs"]["image"]["bottom"]
         - p["inputs"]["image"]["height"]
         * p["gap"]["error_gap_scale"]
         - p["error_image"]["height"]
     )
     error_image_center = (
         p["figure"]["width"]
-        -p["gap"]["right_border"]
-        -p["inputs"]["image"]["width"] / 2
-
+        - p["gap"]["right_border"]
+        - p["inputs"]["image"]["width"] / 2
     )
-
-    error_image_left = (
+    p["error_image"]["left"] = (
         error_image_center
-        -p["error_image"]["width"] / 2        
+        - p["error_image"]["width"] / 2
     )
     return p
 
-def add_input_image(fig, p):
+def add_input_image(fig, p, filler_image):
     absolute_pos = (
         p["gap"]["left_border"],
         p["inputs"]["image"]["bottom"],
@@ -229,12 +233,10 @@ def add_input_image(fig, p):
     add_filler_image(
         ax_input,
         p["inputs"]["n_rows"],
-        p["inputs"]["n_cols"]
+        p["inputs"]["n_cols"],
+        filler_image
     )
         
-def add_filler_image(ax, n_im_rows, n_im_cols):
-    fill_patch = np.random.sample(size=(n_im_rows, n_im_cols))
-    ax.imshow(fill_patch, cmap="inferno")
 
 def add_image_axes(fig, p, absolute_pos):
 
@@ -253,37 +255,6 @@ def add_image_axes(fig, p, absolute_pos):
     ax.spines["right"].set_color(TAN)
     return ax
 
-def add_node_images(fig, i_layer, p):
-    
-    node_image_left = (
-        p["gap"]["left_border"]
-        + p["input"]["image"]["width"]
-        + i_layer * p["node_image"]["width"]
-        + (i_layer + 1) * p["gap"]["between_layer"]
-    )
-    n_nodes = p["network"]["n_nodes"][i_layer]
-    total_layer_height = (
-        n_nodes * p["node_image"]["height"]
-        + (n_nodes - 1) * p["gap"]["between_node"]
-    )
-    layer_bottom = (p["figure"]["height"] - total_layer_height) / 2
-    for i_node in range(n_nodes):
-        node_image_bottom = (
-            layer_bottom + i_node * (
-                p["node_image"]["height"] + p["gap"]["between_node"]))
-
-        absolute_pos = (
-            node_image_left,
-            node_image_bottom,
-            p["node_image"]["width"],
-            p["node_image"]["height"])
-        ax = add_image_axes(fig, p, absolute_pos)
-        add_filler_image(
-            ax,
-            p["input"]["n_rows"],
-            p["input"]["n_cols"],
-        )
-
 
 def find_between_node_gap(p):
    
@@ -298,7 +269,7 @@ def find_between_node_gap(p):
     p["gap"]["between_node"] = vertical_gap_total / n_vertical_gaps
     return p
    
-def add_node_images(fig, i_layer, p):
+def add_node_images(fig, i_layer, p, filler_image):
    
     node_image_left = (
         p["gap"]["left_border"]
@@ -327,9 +298,12 @@ def add_node_images(fig, i_layer, p):
             ax,
             p["inputs"]["n_rows"],
             p["inputs"]["n_cols"],
+            filler_image
         )
 
-def add_output_image(fig, p):
+
+
+def add_output_image(fig, p, filler_image):
     output_image_left = (
         p["figure"]["width"]
         - p["inputs"]["image"]["width"]
@@ -345,7 +319,38 @@ def add_output_image(fig, p):
        ax_output,
        p["inputs"]["n_rows"],
        p["inputs"]["n_cols"],
+       filler_image
     )
+
+def add_error_image(fig, p, filler_image):
+    absolute_pos = (
+        p["error_image"]["left"],
+        p["error_image"]["bottom"],
+        p["error_image"]["width"],
+        p["error_image"]["height"])
+    ax_error = add_image_axes(fig, p, absolute_pos)
+    add_filler_image(
+       ax_error,
+       p["inputs"]["n_rows"],
+       p["inputs"]["n_cols"],
+       filler_image
+    )
+
+def load_filler_image():
+
+    img = Image.open(FILLER_IMAGE_FILENAME)
+    img.load()
+    color_img = np.asarray(img, dtype="int32")
+    bw_img = np.mean(color_img, axis=2, dtype="int32")
+    return bw_img
+
+def add_filler_image(ax, n_im_rows, n_im_cols, filler_image):
+    top = np.random.randint(filler_image.shape[0] - n_im_rows)
+    left = np.random.randint(filler_image.shape[1] - n_im_cols)
+    bottom = top + n_im_rows
+    right = left + n_im_cols
+    fill_patch = filler_image[top: bottom, left: right]
+    ax.imshow(fill_patch, cmap="inferno")
 
 
 if __name__ == "__main__":
