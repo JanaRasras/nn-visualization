@@ -2,6 +2,8 @@
 
 This project uses the Matplotlib skills to  build a picture of a neural network.
 
+----------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
 
 Steps:
 1. Sign in github website. Then in VS Code add your name as global config
